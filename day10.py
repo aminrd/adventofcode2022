@@ -1,6 +1,5 @@
 from bisect import bisect_left
 
-#with open("inputs/test.txt") as f:
 with open("inputs/day10.txt") as f:
     lines = f.readlines()
 
@@ -34,3 +33,24 @@ for qt in query:
         strength += qt * values[ind-1][1]
 
 print(strength)
+
+# Part two
+grid = [['.'] * 40 for _ in range(6)]
+
+def get_X_value(qt):
+    ind = bisect_left(times, qt)
+    if times[ind] <= qt:
+        return values[ind][1]
+    else:
+        return values[ind-1][1]
+
+for t in range(240):
+    i, j = divmod(t, 40)
+    x_value = get_X_value(t+1)
+    #print(x_value)
+
+    if abs(j - x_value) < 2:
+        grid[i][j] = "#"
+
+for row in grid:
+    print("".join(row))
