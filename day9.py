@@ -1,4 +1,3 @@
-# with open("inputs/test.txt") as f:
 with open("inputs/day9.txt") as f:
     lines = f.readlines()
 
