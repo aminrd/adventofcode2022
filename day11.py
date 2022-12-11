@@ -1,22 +1,19 @@
 from collections import defaultdict
+from tqdm import tqdm
 
 with open("inputs/day11.txt") as f:
     lines = f.readlines()
 
 lines = [line.strip() for line in lines]
 
-'''
-  Starting items: 79, 98
-  Operation: new = old * 19
-  Test: divisible by 23
-    If true: throw to monkey 2
-    If false: throw to monkey 3
-'''
+QUESTION_PART_NUMBER = 2
 item_kw_length = len("Starting items: ")
 operation_kw_length = len("Operation: new = old ")
 test_kw_length = len("Test: divisible by ")
 true_kw_length = len("If true: throw to monkey ")
 false_kw_length = len("If false: throw to monkey ")
+
+magic_number = 1
 
 
 class Monkey:
@@ -39,7 +36,7 @@ class Monkey:
         self.cnt = 0
 
     def add_item(self, new_items: list):
-        self.items += new_items
+        self.items += [new_item % magic_number for new_item in new_items]
 
     def compute(self, value):
         if self.operation == "*":
@@ -56,7 +53,9 @@ class Monkey:
         for item in self.items:
             self.cnt += 1
             new_val = self.compute(item)
-            new_val = new_val // 3
+
+            if QUESTION_PART_NUMBER == 1:
+                new_val = new_val // 3
 
             if new_val % self.test_value == 0:
                 output[self.true_target].append(new_val)
@@ -82,9 +81,12 @@ def print_monkies():
         print(monkey.items)
 
 
-for round in range(20):
-    print(f"Running round {round + 1}")
-    # print_monkies()
+for monkey in monkies:
+    magic_number *= monkey.test_value
+
+rounds = 20 if QUESTION_PART_NUMBER == 1 else 10000
+
+for round in tqdm(range(rounds)):
 
     for monkey in monkies:
         output = monkey.process()
@@ -92,4 +94,5 @@ for round in range(20):
             monkies[k].add_item(v)
 
 counts = sorted([monkey.cnt for monkey in monkies])
+print(counts)
 print(counts[-1] * counts[-2])
