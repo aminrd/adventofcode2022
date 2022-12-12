@@ -6,18 +6,19 @@ with open(input_file) as f:
 lines = [line.strip() for line in lines]
 
 
-def get_height(char):
-    if char == 'S':
+def get_height(character : str):
+    if character == 'S':
         return 1
-    if char == 'E':
+    if character == 'E':
         return 26
-    return ord(char) - ord('a')
+    return ord(character) - ord('a')
 
 
 m, n = len(lines), len(lines[0])
 grid = [[0] * n for _ in range(m)]
 
 src, dst = None, None
+all_as = []
 
 for i, row in enumerate(lines):
     for j, char in enumerate(row):
@@ -26,6 +27,8 @@ for i, row in enumerate(lines):
         if char == 'E':
             dst = (i, j)
         grid[i][j] = get_height(char)
+        if grid[i][j] == 0:
+            all_as.append((i, j))
 
 directions = ((0, 1), (0, -1), (1, 0), (-1, 0))
 
@@ -49,18 +52,26 @@ def bfs(start, target):
 
 
 ans1 = bfs(src, dst)
-print(ans1)
+print(f"Part one = {ans1}")
 
 
 # Part two
-best = ans1
+found = False
+queue = [((i, j), 0) for i, j in all_as]
+visited = set(all_as)
 
-for i in range(m):
-    for j in range(n):
-        if grid[i][j] == 0:
-            bfs_result = bfs((i, j), dst)
-            if bfs_result is None:
-                bfs_result = 10 ** 10
-            best = min(best, bfs_result)
+while len(queue) > 0 and not found:
+    (i, j), d = queue.pop(0)
 
-print(best)
+    for di, dj in directions:
+        ai, aj = i + di, j + dj
+        if 0 <= ai < m and 0 <= aj < n and grid[ai][aj] - grid[i][j] <= 1:
+            if (ai, aj) == dst:
+                print(f"Part two = {d+1}")
+                found = True
+                break
+            if (ai, aj) in visited:
+                continue
+
+            queue.append(((ai, aj), d + 1))
+            visited.add((ai, aj))
