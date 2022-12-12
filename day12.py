@@ -48,4 +48,19 @@ def bfs(start, target):
                 visited.add((ai, aj))
 
 
-print(bfs(src, dst))
+ans1 = bfs(src, dst)
+print(ans1)
+
+
+# Part two
+best = ans1
+
+for i in range(m):
+    for j in range(n):
+        if grid[i][j] == 0:
+            bfs_result = bfs((i, j), dst)
+            if bfs_result is None:
+                bfs_result = 10 ** 10
+            best = min(best, bfs_result)
+
+print(best)
