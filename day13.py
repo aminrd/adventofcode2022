@@ -1,3 +1,4 @@
+from functools import cmp_to_key
 DEBUG = 0
 PART_NUMBER = 1
 input_file = "inputs/test.txt" if DEBUG else "inputs/day13.txt"
@@ -38,10 +39,31 @@ def ordered(left, right):
 
 index = 1
 sum_of_index = 0
+part_two = []
 while len(lines) > 0:
     a, b, lines = lines[0], lines[1], lines[3:]
-    if ordered(eval(a), eval(b)) == -1:
+    ea, eb = eval(a), eval(b)
+    part_two.append(ea)
+    part_two.append(eb)
+
+    if ordered(ea, eb) == -1:
         sum_of_index += index
     index += 1
 
 print(sum_of_index)
+
+
+# Part two:
+divider = ([[2]], [[6]])
+part_two.append(divider[0])
+part_two.append(divider[1])
+
+arr = sorted(part_two, key=cmp_to_key(ordered))
+
+
+ans2 = 1
+for i, obj in enumerate(arr):
+    if obj == divider[0] or obj == divider[1]:
+        ans2 *= (i+1)
+
+print(ans2)
