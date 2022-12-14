@@ -1,5 +1,5 @@
 DEBUG = 0
-PART_NUMBER = 1
+PART_NUMBER = 2
 input_file = "inputs/test.txt" if DEBUG else "inputs/day14.txt"
 with open(input_file) as f:
     lines = f.readlines()
@@ -15,6 +15,7 @@ def get_points(line: str):
 rocks = [get_points(line) for line in lines]
 
 blocked = set()
+directions = ((0, 1), (-1, 1), (1, 1))
 min_x, max_x = 500, 500
 max_y = 0
 
@@ -34,8 +35,6 @@ for rock in rocks:
             for xhat in range(min(x1, x2), max(x1, x2) + 1):
                 blocked.add((xhat, y1))
 
-directions = ((0, 1), (-1, 1), (1, 1))
-
 
 def move(x, y):
     for di, dj in directions:
@@ -43,19 +42,22 @@ def move(x, y):
             return x + di, y + dj
     return x, y
 
+
 def insert(pos):
     x, y = pos
     if all((x + di, y + dj) in blocked for di, dj in directions):
         return False
 
-    while pos[1] <= max_y:
+    while pos[1] < max_y + 1:
         new_pos = move(pos[0], pos[1])
         if new_pos == pos:
             blocked.add(pos)
             return True
+
         pos = new_pos
 
-    return False
+    blocked.add(pos)
+    return False if PART_NUMBER == 1 else True
 
 
 count = 0
