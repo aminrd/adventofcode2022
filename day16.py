@@ -159,4 +159,4 @@ def dual_traverse(n1: Node, n2: Node, l1: int, l2: int, open_sofar: int, not_vis
 start = graph['AA']
 limit = 26
 ans2 = dual_traverse(start, start, limit, limit, 0, set(non_zero_caps), 0)
-print(f"Answer one is {ans2}")
+print(f"Answer two is {ans2}")
