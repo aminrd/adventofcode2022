@@ -1,7 +1,7 @@
 from tqdm import tqdm
 
 DEBUG = 0
-PART_NUMBER = 1
+PART_NUMBER = 2
 input_file = "inputs/test.txt" if DEBUG else "inputs/day19.txt"
 with open(input_file) as f:
     lines = f.readlines()
@@ -99,9 +99,18 @@ def get_best(b: Blueprint, t: int, robots: tuple, resources: tuple, best: int, v
     return best
 
 
-total_sum = 0
-for bi, blue_print in tqdm(list(enumerate(blue_prints))):
-    best = get_best(blue_print, 0, (1, 0, 0, 0), (0, 0, 0, 0), 0, set())
-    total_sum += (bi + 1) * best
+if PART_NUMBER == 1:
+    total_sum = 0
+    for bi, blue_print in tqdm(list(enumerate(blue_prints))):
+        best = get_best(blue_print, 0, (1, 0, 0, 0), (0, 0, 0, 0), 0, set())
+        total_sum += (bi + 1) * best
 
-print(f"Answer part one is {total_sum}")
+    print(f"Answer part one is {total_sum}")
+else:
+    total_mult = 1
+    MAX_TIME = 32
+    for blue_print in tqdm(blue_prints[:3]):
+        best = get_best(blue_print, 0, (1, 0, 0, 0), (0, 0, 0, 0), 0, set())
+        total_mult *= best
+
+    print(f"Answer part two is {total_mult}")
