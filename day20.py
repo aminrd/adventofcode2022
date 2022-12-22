@@ -24,7 +24,7 @@ class Node:
         right.prev = self.prev
         right.next = self
         self.prev = right
-        self.ind, right.ind = right.ind, self.ind
+        self.ind, right.position = right.position, self.ind
 
     def move_left(self):
         left = self.prev
@@ -34,13 +34,13 @@ class Node:
         left.next = self.next
         left.prev = self
         self.next = left
-        self.ind, left.ind = left.ind, self.ind
+        self.ind, left.position = left.position, self.ind
 
     def __str__(self):
         return f"{self.prev.val}<-[{self.val}]->{self.next.val}"
 
 def print_nodes(nodes : list[Node]):
-    s = " , ".join(node.__str__() for node in sorted(nodes, key=lambda nd: nd.ind))
+    s = " , ".join(node.__str__() for node in sorted(nodes, key=lambda nd: nd.position))
     print(s)
 
 
