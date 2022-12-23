@@ -1,5 +1,6 @@
 from bisect import bisect_left
 from collections import defaultdict
+
 DEBUG = 0
 PART_NUMBER = 1
 input_file = "inputs/test.txt" if DEBUG else "inputs/day22.txt"
@@ -8,6 +9,7 @@ with open(input_file) as f:
 
 instruction_line = lines[-1].strip() + "S"
 lines = [line[:-1] for line in lines[:-2]]
+
 
 class Node:
     def __init__(self, ii, jj, char):
@@ -39,10 +41,45 @@ def parse_instructions(s):
         i = j + 1
     return l
 
+
 instructions = parse_instructions(instruction_line)
 
 rows = defaultdict(list)
 cols = defaultdict(list)
+
+N = 4 if DEBUG else 50
+cube = [
+    [[None] * N for _ in range(N)],
+    [[None] * N for _ in range(N)],
+    [[None] * N for _ in range(N)],
+    [[None] * N for _ in range(N)],
+    [[None] * N for _ in range(N)],
+    [[None] * N for _ in range(N)]
+]
+
+debug_cube_indexer = [
+    [None, None, 0, None],
+    [1, 2, 3, None],
+    [None, None, 4, 5],
+]
+
+real_cube_indexer = [
+    [None, 0, 1],
+    [None, 2, None],
+    [3, 4, None],
+    [5, None, None]
+]
+
+
+def get_cube_index(i, j):
+    if DEBUG:
+        ci = debug_cube_indexer[i // N][j // N]
+        return ci, i % N, j % N
+    else:
+        ci = real_cube_indexer[i // N][j // N]
+        return ci, i % N, j % N
+
+
 for i, row in enumerate(lines):
     for j, c in enumerate(row):
         if c == " ":
@@ -50,6 +87,9 @@ for i, row in enumerate(lines):
         node = Node(i, j, c)
         rows[i].append(node)
         cols[j].append(node)
+
+        cind, cy, cx = get_cube_index(i, j)
+        cube[cind][cy][cx] = node
 
 
 def find_index(array, i, j):
@@ -82,3 +122,32 @@ for rotate, move in instructions:
 
 password = 1000 * (I + 1) + 4 * (J + 1) + di
 print(f"Answer part one is {password}")
+
+# Part two
+
+debug_cube_horizontal = [
+    [None, None, 0, None],
+    [1, 2, 3, None],
+    [None, None, 4, 5],
+]
+
+real_cube_indexer = [
+    [None, 0, 1],
+    [None, 2, None],
+    [3, 4, None],
+    [5, None, None]
+]
+
+ci, I, J = 0, 0, 0
+dy, dx = 0, 1
+
+for rotate, move in instructions:
+    for _ in range(move):
+        ai, aj = I+dy, J+dx
+        if 0 <= ai < N and 0 <= aj < N:
+            if cube[ci][ai][aj].blocked():
+                break
+            else:
+                I, J = ai, aj
+        else:
+            pass
