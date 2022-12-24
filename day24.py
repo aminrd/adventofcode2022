@@ -2,7 +2,7 @@ import math
 from tqdm import tqdm
 
 DEBUG = 0
-PART_NUMBER = 1
+PART_NUMBER = 2
 input_file = "inputs/test.txt" if DEBUG else "inputs/day24.txt"
 with open(input_file) as f:
     lines = f.readlines()
@@ -53,31 +53,71 @@ for i, line in enumerate(lines):
             snowflakes.append(flake)
 
 MAX_TURN = 10**6
-start = (0, 1)
-goal = (M-1, N-2)
-my_locs = [start]
-goal_found = False
-processed_states = {(*start, 0)}
 
-for t in tqdm(range(MAX_TURN)):
-    blocked = set()
-    for flake in snowflakes:
-        flake.move()
-        blocked.add(flake.loc())
+if PART_NUMBER == 1:
+    start = (0, 1)
+    goal = (M-1, N-2)
+    my_locs = [start]
+    goal_found = False
+    processed_states = {(*start, 0)}
 
-    next_round_locs = []
-    for i, j in my_locs:
-        for di, dj in directions:
-            ai, aj = i+di, j+dj
-            state = (ai, aj, (t+1) % period)
-            if 0 <= ai < M and 0 <= aj < N and (ai, aj) not in wall and (ai, aj) not in blocked and state not in processed_states:
-                processed_states.add(state)
-                if (ai, aj) == goal:
-                    goal_found = True
-                next_round_locs.append((ai, aj))
+    for t in tqdm(range(MAX_TURN)):
+        blocked = set()
+        for flake in snowflakes:
+            flake.move()
+            blocked.add(flake.loc())
 
-    my_locs = next_round_locs
-    if goal_found:
-        break
+        next_round_locs = []
+        for i, j in my_locs:
+            for di, dj in directions:
+                ai, aj = i+di, j+dj
+                state = (ai, aj, (t+1) % period)
+                if 0 <= ai < M and 0 <= aj < N and (ai, aj) not in wall and (ai, aj) not in blocked and state not in processed_states:
+                    processed_states.add(state)
+                    if (ai, aj) == goal:
+                        goal_found = True
+                    next_round_locs.append((ai, aj))
 
-print(f"Answer part one is {t+1}")
+        my_locs = next_round_locs
+        if goal_found:
+            break
+
+    print(f"Answer part one is {t+1}")
+
+else:
+    # Loc = (i, j, goal_index)
+    start = (0, 1, 0)
+    goals = [(M-1, N-2), (0, 1), (M-1, N-2)]
+
+    my_locs = [start]
+    goal_found = False
+    processed_states = {(*start, 0)}
+
+    for t in tqdm(range(MAX_TURN)):
+        blocked = set()
+        for flake in snowflakes:
+            flake.move()
+            blocked.add(flake.loc())
+
+        next_round_locs = []
+        for i, j, goal_index in my_locs:
+            for di, dj in directions:
+                ai, aj = i+di, j+dj
+                if 0 <= ai < M and 0 <= aj < N and (ai, aj) not in wall and (ai, aj) not in blocked:
+                    if goal_index == 2 and (ai, aj) == goals[2]:
+                        goal_found = True
+
+                    if (ai, aj) == goals[goal_index]:
+                        state = (ai, aj, goal_index + 1, (t + 1) % period)
+                    else:
+                        state = (ai, aj, goal_index, (t + 1) % period)
+
+                    if state not in processed_states:
+                        processed_states.add(state)
+                        next_round_locs.append((ai, aj, state[2]))
+
+        my_locs = next_round_locs
+        if goal_found:
+            break
+
+    print(f"Answer part two is {t + 1}")
